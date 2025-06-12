@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Groups - 設定</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+    <div class="options-container">
+        <!-- Header -->
+        <header class="options-header">
+            <div class="header-content">
+                <h1>Calendar Groups 設定</h1>
+                <p class="header-description">Google Calendarのカレンダーをグループ分けして管理できます</p>
+            </div>
+        </header>
+
+        <!-- Main content -->
+        <main class="options-main">
+            <!-- Groups section -->
+            <section class="groups-section">
+                <div class="section-header">
+                    <h2>グループ管理</h2>
+                    <button id="addGroupBtn" class="add-group-btn">
+                        <span class="btn-icon">+</span>
+                        新しいグループを追加
+                    </button>
+                </div>
+
+                <div id="groupsList" class="groups-list">
+                    <!-- Groups will be populated here -->
+                </div>
+
+                <div id="noGroups" class="no-groups" style="display: none;">
+                    <div class="no-groups-icon">📁</div>
+                    <h3>グループが作成されていません</h3>
+                    <p>「新しいグループを追加」ボタンをクリックして最初のグループを作成してください。</p>
+                </div>
+            </section>
+
+            <!-- Instructions section -->
+            <section class="instructions-section">
+                <h2>使用方法</h2>
+                <div class="instructions-content">
+                    <div class="instruction-item">
+                        <div class="instruction-icon">1️⃣</div>
+                        <div class="instruction-text">
+                            <h3>グループを作成</h3>
+                            <p>「新しいグループを追加」ボタンをクリックしてグループを作成します。</p>
+                        </div>
+                    </div>
+                    <div class="instruction-item">
+                        <div class="instruction-icon">2️⃣</div>
+                        <div class="instruction-text">
+                            <h3>カレンダーを追加</h3>
+                            <p>Google Calendarページを開いて、グループにカレンダーを追加します。</p>
+                        </div>
+                    </div>
+                    <div class="instruction-item">
+                        <div class="instruction-icon">3️⃣</div>
+                        <div class="instruction-text">
+                            <h3>グループを切り替え</h3>
+                            <p>拡張機能のポップアップからグループをクリックして表示を切り替えます。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="options-footer">
+            <div class="footer-content">
+                <p>&copy; 2025 Google Calendar Group Manager</p>
+                <div class="footer-links">
+                    <a href="#" id="exportBtn">設定をエクスポート</a>
+                    <a href="#" id="importBtn">設定をインポート</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Add/Edit Group Modal -->
+    <div id="groupModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">新しいグループを追加</h3>
+                <button id="closeModalBtn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="groupForm">
+                    <div class="form-group">
+                        <label for="groupName">グループ名</label>
+                        <input type="text" id="groupName" name="groupName" placeholder="例: 仕事のカレンダー" required>
+                        <div class="form-error" id="groupNameError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="calendar-label-header">
+                            <label>カレンダーを選択</label>
+                            <button type="button" id="refreshCalendarsInModal" class="refresh-calendars-btn" title="カレンダー一覧を更新">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23,4 23,10 17,10"></polyline>
+                                    <path d="M20.49,15a9,9,0,1,1-2.12-9.36L23,10"></path>
+                                </svg>
+                                更新
+                            </button>
+                        </div>
+                        <div class="calendar-selection">
+                            <div id="calendarsList" class="calendars-list">
+                                <!-- Calendars will be populated here -->
+                            </div>
+                            <div id="loadingCalendars" class="loading-calendars" style="display: none;">
+                                <div class="loading-spinner"></div>
+                                <div class="loading-content">
+                                    <div class="loading-text">
+                                        <p id="loadingMessage">カレンダーデータを取得中...</p>
+                                        <p class="loading-description">Google Calendarから情報を読み込んでいます</p>
+                                    </div>
+                                    <div class="loading-guidance">
+                                        <p class="guidance-text">
+                                            <strong>Google Calendarを開いている場合:</strong><br>
+                                            Google Clendarのページに戻り、「他のカレンダー」を閉じて拡張機能画面をもう一度開いてください。
+                                            数秒してからこの画面に戻ってきてください。
+                                        </p>
+                                        <p class="guidance-text">
+                                            <strong>Google Calendarが開いていない場合:</strong><br>
+                                            下のボタンからGoogle Calendarを開いて、他のカレンダーを閉じて拡張機能画面をもう一度開いてください。
+                                            数秒してからこの画面に戻ってきてください。
+                                        </p>
+                                        <div class="guidance-actions">
+                                            <button type="button" id="openCalendarBtn" class="open-calendar-btn">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                                </svg>
+                                                Google Calendarを開く
+                                            </button>
+                                            <button type="button" id="retryLoadCalendars" class="retry-load-btn">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="23,4 23,10 17,10"></polyline>
+                                                    <path d="M20.49,15a9,9,0,1,1-2.12-9.36L23,10"></path>
+                                                </svg>
+                                                再取得
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="noCalendars" class="no-calendars" style="display: none;">
+                                <p>Google Calendarのページを開いてからカレンダーを選択してください。</p>
+                                <button type="button" id="refreshCalendarsBtn" class="refresh-btn">
+                                    カレンダー一覧を更新（強制スクロール）
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-error" id="calendarsError"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancelBtn" class="cancel-btn">キャンセル</button>
+                <button type="submit" id="saveBtn" form="groupForm" class="save-btn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>グループを削除</h3>
+                <button id="closeDeleteModalBtn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>「<span id="deleteGroupName"></span>」グループを削除してもよろしいですか？</p>
+                <p class="delete-warning">この操作は取り消せません。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancelDeleteBtn" class="cancel-btn">キャンセル</button>
+                <button type="button" id="confirmDeleteBtn" class="delete-btn">削除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="importFileInput" accept=".json" style="display: none;">
+
+    <script src="options.js"></script>
+</body>
+</html>
